@@ -1,0 +1,144 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<limits.h>
+struct node
+{
+    float X[10];
+    float profit;
+};
+struct node* knapsack(float *w, float *C, float *M, int *n);
+struct node* merge(float *arr, float *arr1, float *arr2, int *arr3, int *p, int *q, int *r);
+struct node *mergeSort(float *arr, float *arr1, float *arr2, int *arr3, int *p, int *r);
+
+struct node* knapsack(float *w, float *C, float *M, int *n)
+{
+    struct node *ptr;
+    ptr=(struct node *)malloc(sizeof(struct node));
+    float V[*n], X[*n];
+    int index[*n];
+    for (int i = 1; i <=*n; i++)
+    {
+        ptr->X[i] = 0;
+        V[i] = C[i] / w[i];
+    }
+    for (int i = 1; i <=*n; i++)
+    {
+        index[i] = i;
+    }
+    int l = 1, r;
+    r = *n;
+    mergeSort(V, w, C, index, &l, &r);
+    printf("Sorted value cost\n");
+    int i = 1;
+    while ((M != 0) && (i <=*n))
+    {
+        if (w[i]<=*M)
+        {
+            ptr->X[i] = 1;
+            *M = *M-(ptr->X[i] * w[i]);
+        }
+        else
+        {
+            ptr->X[i] = *M / w[i];
+            *M = *M - ptr->X[i] * w[i];
+        }
+        printf("which (%.1f)rs/w cost of the element %.1f percent in the bag \n",V[i], ptr->X[i] * 100);
+        i = i + 1;
+    }
+    for (i = 1; i <=*n; i++)
+      {
+         printf("index{%d} = %.2f\n",index[i],ptr->X[i]);
+     }
+    ptr->profit = 0;
+     for (i = 1; i <=*n; i++)
+      {
+         ptr->profit=C[i]*ptr->X[i]+ptr->profit;
+     }
+return ptr;
+}
+struct node* merge(float *arr, float *arr1, float *arr2, int *arr3, int *p, int *q, int *r)
+{
+    int n1 = *q - *p + 1;
+    int n2 = *r - *q;
+    float left1[n1 + 1], left2[n1 + 1], left3[n1 + 1], left4[n1 + 1];
+    float right1[n2 + 2], right2[n2 + 2],right3[n2 + 2], right4[n2 + 2];
+    for (int i = 1; i <= n1; i++)
+    {
+        left1[i] = arr [*p + i-1];
+        left2[i] = arr1[*p + i-1];
+        left3[i] = arr2[*p + i-1];
+        left4[i] = arr3[*p + i-1];
+    }
+    for (int i = 1; i <= n2; i++)
+    {
+        right1[i] = arr[*q + i];
+        right2[i] = arr1[*q + i];
+        right3[i] = arr2[*q + i];
+        right4[i] = arr3[*q + i];
+    }
+    left1[n1 + 1] = INT_MIN;
+    right1[n2 + 1] = INT_MIN;
+    int i = 1;
+    int j = 1;
+    for (int k = *p; k <= *r; k++)
+    {
+        if (left1[i] >= right1[j])
+        {
+            arr[k] = left1[i];
+            arr1[k] = left2[i];
+            arr2[k] = left3[i];
+            arr3[k] = left4[i];
+            i = i + 1;
+        }
+        else
+        {
+            arr[k] = right1[j];
+            arr1[k] = right2[j];
+            arr2[k] = right3[j];
+            arr3[k] = right4[j];
+            j = j + 1;
+        }
+    }
+}
+
+struct node *mergeSort(float *arr, float *arr1, float *arr2, int *arr3, int *p, int *r)
+{
+    if (*p < *r)
+    {
+        int q = ((*r + *p) / 2);
+        mergeSort(arr, arr1, arr2, arr3, p, &q);
+        int s = q + 1;
+        mergeSort(arr, arr1, arr2, arr3,&s,r);
+        merge(arr, arr1, arr2, arr3, p,&q, r);
+    }
+}
+int main()
+{
+    struct node *ptr;
+    float M; // w[i], and c[i] are weights, and cost, W is the knapsack capacity
+    int n;                 // n is the number of objects
+    printf("Enter the Number of Objects:");
+    scanf("%d", &n);
+    float w[n],c[n];
+    for (int i = 1; i <= n; i++)
+    {
+        printf("Enter the Weight of the object O[%d]", i);
+        printf("w[%d]=", i);
+        scanf("%f", &w[i]);
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        printf("Enter the Cost of the object O[%d]", i);
+        printf("c[%d]=", i);
+        scanf("%f", &c[i]);
+    }
+    printf("Enter the capacity of knapsack:");
+    scanf("%f",&M);
+    ptr = knapsack(w, c, &M,&n);  
+
+    printf("The solution vector is\n");
+     for (int i = 1; i <=n; i++)
+         printf("x[%d]=%f\n", i, ptr->X[i]);
+    printf("Maximum profit is: %f\n", ptr->profit);
+    return (0);
+}
