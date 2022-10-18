@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+long long int power(long long int n)
+{
+    long long int  exp = 1;
+    while (n--)
+    {
+     exp = exp * 10;
+    }
+    return exp;
+}
+long long int numlen(long long int X)
+{
+    long long int count = 0;
+    while (X != 0)
+    {
+        X = X / 10;
+        count = count + 1;
+    
+    }
+    if (count == 0)
+    {
+        return count + 1;
+    }
+    else
+    {
+        return count;
+    }
+    
+}
+long long int Numlen(long long int n1, long long int n2)
+{
+    if (n1 > n2)
+    {
+        return n1;
+    }
+    else
+    {
+        return n2;
+    }
+}
+long long int KARATSUBA(long long int X, long long int Y)
+{
+    long long int X1, X2, Y1, Y2, U, W, V, z, p, n1, n2, n;
+    n1 = numlen(X);
+    n2 = numlen(Y);
+    n = Numlen(n1, n2);
+    if (n == 1)
+    {
+        p = X * Y;
+    }
+    else
+    {
+        n = n + n % 2;
+        // printf("%lld\n",n);
+        X2 = X % power(n / 2);
+        X1 = X / power(n / 2);
+        Y2 = Y % power(n / 2);
+        Y1 = Y / power(n / 2);
+
+        X =power(n/2)*X1 + X2;
+        Y =power(n/2)*Y1 + Y2;
+        printf("%lld %lld ",X,Y);
+        U = KARATSUBA(X1, Y1);
+        V = KARATSUBA(X2, Y2);
+        W = KARATSUBA(X1 - X2, Y1 - Y2);
+        z = U + V - W;
+
+        p = power(n) * U + power(n / 2) * z + V;
+    }
+    return p;
+}
+
+long long int main()
+{
+    long long int X, Y;
+    printf("enter the two value X and Y\n");
+    scanf("%lld %lld", &X, &Y);
+    KARATSUBA(X, Y);
+    printf("value = %lld", KARATSUBA(X, Y));
+    return 0;
+}
